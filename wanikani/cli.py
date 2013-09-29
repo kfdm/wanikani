@@ -23,13 +23,20 @@ def main():
     # Global Options
     parser.add_argument('-a', '--api-key', default=config())
 
-    profile_parser = subparsers.add_parser('profile')
     def profile(client, args):
         p = client.profile()
         print 'Username:', p['username']
         print 'Level:', p['level']
-    profile_parser.set_defaults(func=profile)
+    profile.parser = subparsers.add_parser('profile')
+    profile.parser.set_defaults(func=profile)
 
+    def level_progress(client, args):
+        p = client.level_progress()
+        print p['user_information']['username'], 'level', p['user_information']['level']
+        print 'Radicals:', p['radicals_total']
+        print 'Kanji:', p['kanji_total']
+    level_progress.parser = subparsers.add_parser('progress')
+    level_progress.parser.set_defaults(func=level_progress)
 
     args = parser.parse_args()
     client = WaniKani(args.api_key)

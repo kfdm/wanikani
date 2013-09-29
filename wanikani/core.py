@@ -19,3 +19,11 @@ class WaniKani(object):
         result = requests.get(url)
         data = json.loads(result.text)
         return data['user_information']
+
+    def level_progress(self):
+        url = WANIKANI_BASE.format(self.api_key, 'level-progression')
+        result = requests.get(url)
+        data = json.loads(result.text)
+        merged = data['requested_information']
+        merged['user_information'] = data['user_information']
+        return merged
