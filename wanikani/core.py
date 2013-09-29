@@ -27,3 +27,13 @@ class WaniKani(object):
         merged = data['requested_information']
         merged['user_information'] = data['user_information']
         return merged
+
+    def recent_unlocks(self, limit=10):
+        url = WANIKANI_BASE.format(self.api_key, 'recent-unlocks')
+        result = requests.get(url)
+        data = json.loads(result.text)
+
+        return {
+            'items': data['requested_information'],
+            'user_information': data['user_information'],
+        }

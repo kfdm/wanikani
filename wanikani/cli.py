@@ -43,6 +43,14 @@ def main():
     level_progress.parser = subparsers.add_parser('progress')
     level_progress.parser.set_defaults(func=level_progress)
 
+    def recent_unlocks(client, args):
+        p = client.recent_unlocks()
+        print p['user_information']['username'], 'level', p['user_information']['level']
+        for item in p['items']:
+            print item['level'], item['character']
+    recent_unlocks.parser = subparsers.add_parser('unlocks')
+    recent_unlocks.parser.set_defaults(func=recent_unlocks)
+
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)
     client = WaniKani(args.api_key)
