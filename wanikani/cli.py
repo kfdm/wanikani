@@ -22,6 +22,11 @@ def main():
 
     # Global Options
     parser.add_argument('-a', '--api-key', default=config())
+    parser.add_argument('-d', '--debug',
+        action='store_const',
+        const=logging.DEBUG,
+        default=logging.WARNING
+    )
 
     def profile(client, args):
         p = client.profile()
@@ -39,5 +44,6 @@ def main():
     level_progress.parser.set_defaults(func=level_progress)
 
     args = parser.parse_args()
+    logging.basicConfig(level=args.debug)
     client = WaniKani(args.api_key)
     args.func(client, args)
