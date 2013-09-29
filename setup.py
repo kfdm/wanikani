@@ -23,6 +23,7 @@ setup(
     url='http://github.com/kfdm/wanikani/',
     version=__version__,
     packages=['wanikani'],
+    install_requires=['requests'],
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Development Status :: 3 - Alpha',
