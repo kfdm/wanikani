@@ -1,12 +1,13 @@
 import argparse
-import os
 import logging
+import os
 
-from wanikani.core import WaniKani
+from wanikani.core import WaniKani, Radical, Kanji, Vocabulary
 
 CONFIG_PATH = os.path.join(os.path.expanduser('~'), '.wanikani')
 
 logger = logging.getLogger(__name__)
+
 
 def config():
     if os.path.exists(CONFIG_PATH):
@@ -50,6 +51,32 @@ def main():
             print item['level'], item['character']
     recent_unlocks.parser = subparsers.add_parser('unlocks')
     recent_unlocks.parser.set_defaults(func=recent_unlocks)
+
+    def upcoming(client, args):
+        queue = client.upcoming()
+
+        for ts in sorted(queue):
+            if len(queue[ts]):
+                radicals, kanji, vocab, total = 0, 0, 0, 0
+                for obj in queue[ts]:
+                    total += 1
+                    if isinstance(obj, Radical):
+                        radicals += 1
+                    if isinstance(obj, Kanji):
+                        kanji += 1
+                    if isinstance(obj, Vocabulary):
+                        vocab += 1
+
+                # Note the trailing commas,
+                # We only want a newline for the last one
+                print ts,
+                print 'Total:', total,
+                print 'Radials:', radicals,
+                print 'Kanji:', kanji,
+                print 'Vocab:', vocab
+
+    upcoming.parser = subparsers.add_parser('upcoming')
+    upcoming.parser.set_defaults(func=upcoming)
 
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)
