@@ -42,7 +42,8 @@ def main():
         p = client.profile()
         print 'Username:', p['username']
         print 'Level:', p['level']
-    profile.parser = subparsers.add_parser('profile')
+    profile.parser = subparsers.add_parser(
+        'profile', help="Show basic profile information")
     profile.parser.set_defaults(func=profile)
 
     def level_progress(client, args):
@@ -50,7 +51,8 @@ def main():
         print p['user_information']['username'], 'level', p['user_information']['level']
         print 'Radicals:', p['radicals_total']
         print 'Kanji:', p['kanji_total']
-    level_progress.parser = subparsers.add_parser('progress')
+    level_progress.parser = subparsers.add_parser(
+        'progress', help="Show level progress")
     level_progress.parser.set_defaults(func=level_progress)
 
     def recent_unlocks(client, args):
@@ -58,7 +60,8 @@ def main():
         print p['user_information']['username'], 'level', p['user_information']['level']
         for item in p['items']:
             print item['level'], item['character']
-    recent_unlocks.parser = subparsers.add_parser('unlocks')
+    recent_unlocks.parser = subparsers.add_parser(
+        'unlocks', help="Show recent unlocks")
     recent_unlocks.parser.set_defaults(func=recent_unlocks)
 
     def upcoming(client, args):
@@ -86,16 +89,18 @@ def main():
                 print 'Kanji:', kanji,
                 print 'Vocab:', vocab
 
-    upcoming.parser = subparsers.add_parser('upcoming')
+    upcoming.parser = subparsers.add_parser(
+        'upcoming', help="Show report of upcoming reviews")
     upcoming.parser.set_defaults(func=upcoming)
 
     def set_key(client, args):
         with open(CONFIG_PATH, 'w') as f:
             f.write(args.api_key)
         print 'Wrote {0} to {1}'.format(args.api_key, CONFIG_PATH)
-    set_key.parser = subparsers.add_parser('set_key')
+    set_key.parser = subparsers.add_parser(
+        'set_key', help="Set API Key")
     set_key.parser.set_defaults(func=set_key)
-    set_key.parser.add_argument('api_key',help="New API Key")
+    set_key.parser.add_argument('api_key', help="New API Key")
 
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)
