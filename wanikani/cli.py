@@ -26,45 +26,56 @@ def config():
     return ''
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
+class Subcommand(object):
+    def __init__(self, subparser):
+        self.parser = subparser.add_parser(self.name, help=self.help)
+        self.parser.set_defaults(func=self.execute)
+        self.add_parsers()
 
-    # Global Options
-    parser.add_argument('-a', '--api-key', default=config())
-    parser.add_argument('-d', '--debug',
-        action='store_const',
-        const=logging.DEBUG,
-        default=logging.WARNING
-    )
+    def add_parsers(self):
+        pass
 
-    def profile(client, args):
+    def execute(self, client, args):
+        raise NotImplementedError
+
+
+class Profile(Subcommand):
+    name = 'profile'
+    help = 'Show simple profile information'
+
+    def execute(self, client, args):
         p = client.profile()
         print 'Username:', p['username']
         print 'Level:', p['level']
-    profile.parser = subparsers.add_parser(
-        'profile', help="Show basic profile information")
-    profile.parser.set_defaults(func=profile)
 
-    def level_progress(client, args):
+
+class LevelProgress(Subcommand):
+    name = 'progress'
+    help = 'Show level progress'
+
+    def execute(self, client, args):
         p = client.level_progress()
         print p['user_information']['username'], 'level', p['user_information']['level']
         print 'Radicals:', p['radicals_total']
         print 'Kanji:', p['kanji_total']
-    level_progress.parser = subparsers.add_parser(
-        'progress', help="Show level progress")
-    level_progress.parser.set_defaults(func=level_progress)
 
-    def recent_unlocks(client, args):
+
+class RecentUnlocks(Subcommand):
+    name = 'unlocks'
+    help = 'Show recently unlocked items'
+
+    def execute(self, client, args):
         p = client.recent_unlocks()
         print p['user_information']['username'], 'level', p['user_information']['level']
         for item in p['items']:
             print item['level'], item['character']
-    recent_unlocks.parser = subparsers.add_parser(
-        'unlocks', help="Show recent unlocks")
-    recent_unlocks.parser.set_defaults(func=recent_unlocks)
 
-    def upcoming(client, args):
+
+class Upcoming(Subcommand):
+    name = 'upcoming'
+    help = 'Show report of upcoming reviews'
+
+    def execute(self, client, args):
         queue = client.upcoming()
 
         for ts in sorted(queue):
@@ -89,18 +100,39 @@ def main():
                 print 'Kanji:', kanji,
                 print 'Vocab:', vocab
 
-    upcoming.parser = subparsers.add_parser(
-        'upcoming', help="Show report of upcoming reviews")
-    upcoming.parser.set_defaults(func=upcoming)
 
-    def set_key(client, args):
+class SetAPIKey(Subcommand):
+    name = 'set_key'
+    help = 'Set API Key'
+
+    def add_parsers(self):
+        self.parser.add_argument('api_key', help="New API Key")
+
+    def execute(self, client, args):
         with open(CONFIG_PATH, 'w') as f:
             f.write(args.api_key)
         print 'Wrote {0} to {1}'.format(args.api_key, CONFIG_PATH)
-    set_key.parser = subparsers.add_parser(
-        'set_key', help="Set API Key")
-    set_key.parser.set_defaults(func=set_key)
-    set_key.parser.add_argument('api_key', help="New API Key")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    # Global Options
+    parser.add_argument('-a', '--api-key', default=config())
+    parser.add_argument(
+        '-d', '--debug',
+        action='store_const',
+        const=logging.DEBUG,
+        default=logging.WARNING
+    )
+
+    # Add our sub commands
+    Profile(subparsers)
+    LevelProgress(subparsers)
+    RecentUnlocks(subparsers)
+    Upcoming(subparsers)
+    SetAPIKey(subparsers)
 
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)
