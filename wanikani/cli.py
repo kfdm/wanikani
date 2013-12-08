@@ -2,6 +2,15 @@ import argparse
 import logging
 import os
 
+# If the tzlocal package is installed, then we will help the user out
+# and print things out in the local timezone
+LOCAL_TIMEZONE = None
+try:
+    import tzlocal
+    LOCAL_TIMEZONE = tzlocal.get_localzone()
+except ImportError:
+    pass
+
 from wanikani.core import WaniKani, Radical, Kanji, Vocabulary
 
 CONFIG_PATH = os.path.join(os.path.expanduser('~'), '.wanikani')
@@ -67,6 +76,8 @@ def main():
                     if isinstance(obj, Vocabulary):
                         vocab += 1
 
+                if LOCAL_TIMEZONE:
+                    ts.replace(tzinfo=LOCAL_TIMEZONE)
                 # Note the trailing commas,
                 # We only want a newline for the last one
                 print ts,
