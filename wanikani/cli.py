@@ -56,8 +56,8 @@ class LevelProgress(Subcommand):
     def execute(self, client, args):
         p = client.level_progress()
         print p['user_information']['username'], 'level', p['user_information']['level']
-        print 'Radicals:', p['radicals_total']
-        print 'Kanji:', p['kanji_total']
+        print 'Radicals: {0}/{1}'.format(p['radicals_progress'], p['radicals_total'])
+        print 'Kanji: {0}/{1}'.format(p['kanji_progress'], p['kanji_total'])
 
 
 class RecentUnlocks(Subcommand):
