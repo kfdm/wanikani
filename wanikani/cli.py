@@ -78,6 +78,14 @@ def main():
     upcoming.parser = subparsers.add_parser('upcoming')
     upcoming.parser.set_defaults(func=upcoming)
 
+    def set_key(client, args):
+        with open(CONFIG_PATH, 'w') as f:
+            f.write(args.api_key)
+        print 'Wrote {0} to {1}'.format(args.api_key, CONFIG_PATH)
+    set_key.parser = subparsers.add_parser('set_key')
+    set_key.parser.set_defaults(func=set_key)
+    set_key.parser.add_argument('api_key',help="New API Key")
+
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)
     client = WaniKani(args.api_key)
