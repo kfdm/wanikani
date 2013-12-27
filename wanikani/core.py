@@ -30,7 +30,10 @@ class BaseObject(object):
 
 class Radical(BaseObject):
     def __repr__(self):
-        return '<Radical: {0}>'.format(self.raw['character'].encode('utf8'))
+        if self.raw['character']:
+            return '<Radical: {0}>'.format(self.raw['character'].encode('utf8'))
+        # Some characters do not have a unicode representation
+        return 'No Unicode'
 
 
 class Kanji(BaseObject):
@@ -41,6 +44,7 @@ class Kanji(BaseObject):
 class Vocabulary(BaseObject):
     def __unicode__(self):
         return '{0} [{1}]'.format(self.raw['character'], self.raw['kana'])
+
     def __repr__(self):
         return '<Vocabulary: {0}>'.format(self.raw['character'].encode('utf8'))
 

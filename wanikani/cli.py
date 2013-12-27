@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import logging
 import os
 
@@ -75,10 +76,24 @@ class Upcoming(Subcommand):
     name = 'upcoming'
     help = 'Show report of upcoming reviews'
 
+    def add_parsers(self):
+        self.parser.add_argument('-r', '--rollup', action='store_true')
+
     def execute(self, client, args):
         queue = client.upcoming()
 
-        for ts in sorted(queue):
+        if args.rollup:
+            now = datetime.datetime.now().replace(microsecond=0)
+            # now += datetime.timedelta(hours=5) #  Future date for testing
+            rollup = []
+            for ts in queue.keys():
+                if ts < now:
+                    rollup += queue.pop(ts)
+            if rollup:
+                queue[now] = rollup
+                print 'Rolled up reviews'
+
+        for ts in sorted(queue)[:10]:
             if len(queue[ts]):
                 radicals, kanji, vocab, total = 0, 0, 0, 0
                 for obj in queue[ts]:
@@ -95,12 +110,12 @@ class Upcoming(Subcommand):
                 # Note the trailing commas,
                 # We only want a newline for the last one
                 print '{0} Total: {1:>3}     Radicals: {2:>3} Kanji: {3:>3} Vocab: {4:>3}'.format(
-                        ts,
-                        total,
-                        radicals,
-                        kanji,
-                        vocab
-                        )
+                    ts,
+                    total,
+                    radicals,
+                    kanji,
+                    vocab
+                    )
 
 
 class SetAPIKey(Subcommand):
