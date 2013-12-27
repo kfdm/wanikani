@@ -94,11 +94,13 @@ class Upcoming(Subcommand):
                     ts.replace(tzinfo=LOCAL_TIMEZONE)
                 # Note the trailing commas,
                 # We only want a newline for the last one
-                print ts,
-                print 'Total:', total,
-                print 'Radials:', radicals,
-                print 'Kanji:', kanji,
-                print 'Vocab:', vocab
+                print '{0} Total: {1:>3}     Radicals: {2:>3} Kanji: {3:>3} Vocab: {4:>3}'.format(
+                        ts,
+                        total,
+                        radicals,
+                        kanji,
+                        vocab
+                        )
 
 
 class SetAPIKey(Subcommand):
