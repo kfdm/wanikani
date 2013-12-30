@@ -1,7 +1,7 @@
 try:
     from setuptools import setup
     kwargs = {
-        'entry_points':{
+        'entry_points': {
             'console_scripts': [
                 'wk = wanikani.cli:main'
             ]
@@ -10,7 +10,7 @@ try:
 except ImportError:
     from distutils.core import setup
     kwargs = {
-        'scripts':['scripts/wk']
+        'scripts': ['scripts/wk']
     }
 
 __version__ = '0.1'
