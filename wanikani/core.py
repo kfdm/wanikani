@@ -33,7 +33,7 @@ class Radical(BaseObject):
         if self.raw['character']:
             return '<Radical: {0}>'.format(self.raw['character'].encode('utf8'))
         # Some characters do not have a unicode representation
-        return 'No Unicode'
+        return '<Radical: No Unicode>'
 
 
 class Kanji(BaseObject):
