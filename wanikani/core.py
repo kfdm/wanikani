@@ -32,6 +32,13 @@ class BaseObject(object):
     def __unicode__(self):
         return self.raw['character']
 
+    def __str__(self):
+        try:
+            return self.raw['character'].encode('utf8')
+        except AttributeError:
+            # Certain Radicals do not have a utf8 representation
+            return '?'.encode('utf8')
+
 
 class Radical(BaseObject):
     def __repr__(self):

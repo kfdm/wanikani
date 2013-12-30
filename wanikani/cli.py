@@ -79,6 +79,7 @@ class Upcoming(Subcommand):
     def add_parsers(self):
         self.parser.add_argument('-r', '--rollup', action='store_true')
         self.parser.add_argument('-c', '--current', action='store_true')
+        self.parser.add_argument('-l', '--list', action='store_true')
 
     def execute(self, client, args):
         queue = client.upcoming()
@@ -127,6 +128,10 @@ class Upcoming(Subcommand):
                     kanji,
                     vocab
                 )
+
+                if args.list:
+                    print '\t',
+                    print ', '.join([str(x) for x in queue[ts]])
 
 
 class SetAPIKey(Subcommand):
