@@ -22,7 +22,12 @@ class BaseObject(object):
             return None
         return datetime.datetime.fromtimestamp(
             self.raw['user_specific']['available_date']
-            )
+        )
+
+    def __getitem__(self, key):
+        if key in self.raw:
+            return self.raw[key]
+        return self.raw['user_specific'][key]
 
     def __unicode__(self):
         return self.raw['character']
