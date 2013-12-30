@@ -78,9 +78,20 @@ class Upcoming(Subcommand):
 
     def add_parsers(self):
         self.parser.add_argument('-r', '--rollup', action='store_true')
+        self.parser.add_argument('-c', '--current', action='store_true')
 
     def execute(self, client, args):
         queue = client.upcoming()
+
+        if args.current:
+            profile = client.profile()
+            print 'Showing upcoming items for level', profile['level']
+            logger.info('Filtering out items that are not level %s', profile['level'])
+            for ts in queue.keys():
+                for item in queue[ts]:
+                    if item['level'] != profile['level']:
+                        queue[ts].remove(item)
+                        logger.debug('Filtered out %s (level %d)', item, item['level'])
 
         if args.rollup:
             now = datetime.datetime.now().replace(microsecond=0)
@@ -115,7 +126,7 @@ class Upcoming(Subcommand):
                     radicals,
                     kanji,
                     vocab
-                    )
+                )
 
 
 class SetAPIKey(Subcommand):
