@@ -64,12 +64,12 @@ class LevelProgress(Subcommand):
 class RecentUnlocks(Subcommand):
     name = 'unlocks'
     help = 'Show recently unlocked items'
+    formatter = '{0:<10} {1:<5} {2}'
 
     def execute(self, client, args):
-        p = client.recent_unlocks()
-        print p['user_information']['username'], 'level', p['user_information']['level']
-        for item in p['items']:
-            print item['level'], item['character']
+        print self.formatter.format('type', 'level', 'character')
+        for item in client.recent_unlocks():
+            print self.formatter.format(item['type'], item['level'], item)
 
 
 class Upcoming(Subcommand):

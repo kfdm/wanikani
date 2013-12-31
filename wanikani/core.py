@@ -84,10 +84,15 @@ class WaniKani(object):
         result = requests.get(url)
         data = json.loads(result.text)
 
-        return {
-            'items': data['requested_information'],
-            'user_information': data['user_information'],
+        mapping = {
+            'vocabulary': Vocabulary,
+            'kanji': Kanji,
+            'radical': Radical,
         }
+
+        for item in data['requested_information']:
+            klass = mapping[item['type']]
+            yield klass(item)
 
     def radicals(self, levels=None):
         url = WANIKANI_BASE.format(self.api_key, 'radicals')
