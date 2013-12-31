@@ -75,6 +75,7 @@ class RecentUnlocks(Subcommand):
 class Upcoming(Subcommand):
     name = 'upcoming'
     help = 'Show report of upcoming reviews'
+    formatter = '{0:<20} {1:>10} {2:>10} {3:>10} {4:>10}'
 
     def add_parsers(self):
         self.parser.add_argument('-r', '--rollup', action='store_true')
@@ -107,6 +108,7 @@ class Upcoming(Subcommand):
                 print 'Rolled up reviews'
 
         counter = 0
+        print self.formatter.format('Timestamp', 'Radicals', 'Kanji', 'Vocab', 'Total')
         for ts in sorted(queue):
             if args.limit and counter == args.limit:
                 break
@@ -126,12 +128,12 @@ class Upcoming(Subcommand):
                     ts.replace(tzinfo=LOCAL_TIMEZONE)
                 # Note the trailing commas,
                 # We only want a newline for the last one
-                print '{0} Total: {1:>3}     Radicals: {2:>3} Kanji: {3:>3} Vocab: {4:>3}'.format(
-                    ts,
-                    total,
+                print self.formatter.format(
+                    str(ts),
                     radicals,
                     kanji,
-                    vocab
+                    vocab,
+                    total,
                 )
 
                 if args.show:
