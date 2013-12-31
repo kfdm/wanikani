@@ -79,7 +79,7 @@ class Upcoming(Subcommand):
     def add_parsers(self):
         self.parser.add_argument('-r', '--rollup', action='store_true')
         self.parser.add_argument('-c', '--current', action='store_true')
-        self.parser.add_argument('-l', '--list', action='store_true')
+        self.parser.add_argument('-s', '--show', action='store_true')
 
     def execute(self, client, args):
         queue = client.upcoming()
@@ -129,7 +129,7 @@ class Upcoming(Subcommand):
                     vocab
                 )
 
-                if args.list:
+                if args.show:
                     print '\t',
                     print ', '.join([str(x) for x in queue[ts]])
 
