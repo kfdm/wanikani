@@ -80,6 +80,7 @@ class Upcoming(Subcommand):
         self.parser.add_argument('-r', '--rollup', action='store_true')
         self.parser.add_argument('-c', '--current', action='store_true')
         self.parser.add_argument('-s', '--show', action='store_true')
+        self.parser.add_argument('-l', '--limit', type=int)
 
     def execute(self, client, args):
         queue = client.upcoming()
@@ -105,8 +106,12 @@ class Upcoming(Subcommand):
                 queue[now] = rollup
                 print 'Rolled up reviews'
 
-        for ts in sorted(queue)[:10]:
+        counter = 0
+        for ts in sorted(queue):
+            if args.limit and counter == args.limit:
+                break
             if len(queue[ts]):
+                counter += 1
                 radicals, kanji, vocab, total = 0, 0, 0, 0
                 for obj in queue[ts]:
                     total += 1
