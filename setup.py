@@ -18,7 +18,7 @@ __version__ = '0.1'
 setup(
     name='wanikani',
     description='Python Library for WaniKani',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     author='Paul Traylor',
     url='http://github.com/kfdm/wanikani/',
     version=__version__,
