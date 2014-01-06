@@ -24,6 +24,10 @@ class BaseObject(object):
             self.raw['user_specific']['available_date']
         )
 
+    @property
+    def srs(self):
+        return self.raw['user_specific']['srs']
+
     def __getitem__(self, key):
         if key in self.raw:
             return self.raw[key]

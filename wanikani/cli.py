@@ -82,19 +82,33 @@ class Upcoming(Subcommand):
         self.parser.add_argument('-c', '--current', action='store_true')
         self.parser.add_argument('-s', '--show', action='store_true')
         self.parser.add_argument('-l', '--limit', type=int)
+        self.parser.add_argument('-b', '--blocker', action='store_true')
 
     def execute(self, client, args):
         queue = client.upcoming()
 
-        if args.current:
+        if args.current or args.blocker:
             profile = client.profile()
             print 'Showing upcoming items for level', profile['level']
             logger.info('Filtering out items that are not level %s', profile['level'])
             for ts in queue.keys():
+                keep = []
                 for item in queue[ts]:
+                    if args.blocker and isinstance(item, Vocabulary):
+                        logger.debug('Filtered out %s (Vocabulary)', item)
+                        continue
+
+                    if args.blocker and item.srs != u'apprentice':
+                        logger.debug('Filtered out %s (srs %s)', str(item), str(item.srs))
+                        continue
+
                     if item['level'] != profile['level']:
-                        queue[ts].remove(item)
                         logger.debug('Filtered out %s (level %d)', item, item['level'])
+                        continue
+
+                    keep.append(item)
+
+                queue[ts] = keep
 
         if args.rollup:
             now = datetime.datetime.now().replace(microsecond=0)
