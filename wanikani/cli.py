@@ -123,20 +123,34 @@ class Upcoming(Subcommand):
 
         counter = 0
         print self.formatter.format('Timestamp', 'Radicals', 'Kanji', 'Vocab', 'Total')
+        totals = {
+            Radical: 0,
+            Kanji: 0,
+            Vocabulary: 0,
+            'total': 0,
+        }
         for ts in sorted(queue):
             if args.limit and counter == args.limit:
                 break
             if len(queue[ts]):
                 counter += 1
-                radicals, kanji, vocab, total = 0, 0, 0, 0
+                counts = {
+                    Radical: 0,
+                    Kanji: 0,
+                    Vocabulary: 0,
+                }
+
                 for obj in queue[ts]:
-                    total += 1
+                    totals['total'] += 1
                     if isinstance(obj, Radical):
-                        radicals += 1
+                        counts[Radical] += 1
+                        totals[Radical] += 1
                     if isinstance(obj, Kanji):
-                        kanji += 1
+                        counts[Kanji] += 1
+                        totals[Kanji] += 1
                     if isinstance(obj, Vocabulary):
-                        vocab += 1
+                        counts[Vocabulary] += 1
+                        totals[Vocabulary] += 1
 
                 if LOCAL_TIMEZONE:
                     ts.replace(tzinfo=LOCAL_TIMEZONE)
@@ -144,15 +158,22 @@ class Upcoming(Subcommand):
                 # We only want a newline for the last one
                 print self.formatter.format(
                     str(ts),
-                    radicals,
-                    kanji,
-                    vocab,
-                    total,
+                    counts[Radical],
+                    counts[Kanji],
+                    counts[Vocabulary],
+                    len(queue[ts]),
                 )
 
                 if args.show:
                     print '\t',
                     print ', '.join([str(x) for x in queue[ts]])
+        print self.formatter.format(
+            'Totals',
+            totals[Radical],
+            totals[Kanji],
+            totals[Vocabulary],
+            totals['total']
+        )
 
 
 class SetAPIKey(Subcommand):
