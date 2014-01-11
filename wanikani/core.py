@@ -100,15 +100,19 @@ class WaniKani(object):
 
     def radicals(self, levels=None):
         url = WANIKANI_BASE.format(self.api_key, 'radicals')
-        result = requests.get(url)
+        if levels:
+            url += '/{0}'.format(levels)
+        result = self.session.get(url)
         data = json.loads(result.text)
 
         for item in data['requested_information']:
             yield Radical(item)
 
-    def kanji(self, levels=None):
+    def kanji(self, levels=''):
         url = WANIKANI_BASE.format(self.api_key, 'kanji')
-        result = requests.get(url)
+        if levels:
+            url += '/{0}'.format(levels)
+        result = self.session.get(url)
         data = json.loads(result.text)
 
         for item in data['requested_information']:
@@ -116,13 +120,19 @@ class WaniKani(object):
 
     def vocabulary(self, levels=None):
         url = WANIKANI_BASE.format(self.api_key, 'vocabulary')
-        result = requests.get(url)
+        if levels:
+            url += '/{0}'.format(levels)
+        result = self.session.get(url)
         data = json.loads(result.text)
 
-        for item in data['requested_information']['general']:
-            yield Vocabulary(item)
+        if 'general' in data['requested_information']:
+            for item in data['requested_information']['general']:
+                yield Vocabulary(item)
+        else:
+            for item in data['requested_information']:
+                yield Vocabulary(item)
 
-    def upcoming(self):
+    def upcoming(self, levels=None):
         queue = collections.defaultdict(list)
 
         mapping = {
@@ -132,7 +142,7 @@ class WaniKani(object):
         }
 
         for klass in mapping:
-            for obj in mapping[klass]():
+            for obj in mapping[klass](levels):
                 if obj.next_review:
                     queue[obj.next_review].append(obj)
         return queue
