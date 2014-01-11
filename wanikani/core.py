@@ -68,16 +68,17 @@ class Vocabulary(BaseObject):
 class WaniKani(object):
     def __init__(self, api_key):
         self.api_key = api_key
+        self.session = requests.Session()
 
     def profile(self):
         url = WANIKANI_BASE.format(self.api_key, 'user-information')
-        result = requests.get(url)
+        result = self.session.get(url)
         data = json.loads(result.text)
         return data['user_information']
 
     def level_progress(self):
         url = WANIKANI_BASE.format(self.api_key, 'level-progression')
-        result = requests.get(url)
+        result = self.session.get(url)
         data = json.loads(result.text)
         merged = data['requested_information']
         merged['user_information'] = data['user_information']
@@ -85,7 +86,7 @@ class WaniKani(object):
 
     def recent_unlocks(self, limit=10):
         url = WANIKANI_BASE.format(self.api_key, 'recent-unlocks')
-        result = requests.get(url)
+        result = self.session.get(url)
         data = json.loads(result.text)
 
         mapping = {
