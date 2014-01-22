@@ -144,6 +144,6 @@ class WaniKani(object):
 
         for klass in mapping:
             for obj in mapping[klass](levels):
-                if obj.next_review:
+                if obj.next_review and obj.srs != u'burned':
                     queue[obj.next_review].append(obj)
         return queue
