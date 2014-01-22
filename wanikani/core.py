@@ -100,6 +100,13 @@ class WaniKani(object):
             yield klass(item)
 
     def radicals(self, levels=None):
+        """
+        :param levels string: An optional argument of declaring a single or
+            comma-delimited list of levels is available, as seen in the example
+            as 1. An example of a comma-delimited list of levels is 1,2,5,9.
+
+        http://www.wanikani.com/api/v1.2#radicals-list
+        """
         url = WANIKANI_BASE.format(self.api_key, 'radicals')
         if levels:
             url += '/{0}'.format(levels)
@@ -109,7 +116,15 @@ class WaniKani(object):
         for item in data['requested_information']:
             yield Radical(item)
 
-    def kanji(self, levels=''):
+    def kanji(self, levels=None):
+        """
+        :param levels: An optional argument of declaring a single or
+            comma-delimited list of levels is available, as seen in the example
+            as 1. An example of a comma-delimited list of levels is 1,2,5,9.
+        :type levels: str or None
+
+        http://www.wanikani.com/api/v1.2#kanji-list
+        """
         url = WANIKANI_BASE.format(self.api_key, 'kanji')
         if levels:
             url += '/{0}'.format(levels)
@@ -120,6 +135,14 @@ class WaniKani(object):
             yield Kanji(item)
 
     def vocabulary(self, levels=None):
+        """
+        :param levels: An optional argument of declaring a single or
+            comma-delimited list of levels is available, as seen in the example
+            as 1. An example of a comma-delimited list of levels is 1,2,5,9.
+        :type levels: str or None
+
+        http://www.wanikani.com/api/v1.2#vocabulary-list
+        """
         url = WANIKANI_BASE.format(self.api_key, 'vocabulary')
         if levels:
             url += '/{0}'.format(levels)
@@ -134,6 +157,15 @@ class WaniKani(object):
                 yield Vocabulary(item)
 
     def upcoming(self, levels=None):
+        """
+        Return mapping of upcoming items
+
+        :param levels: An optional argument of declaring a single or
+            comma-delimited list of levels is available, as seen in the example
+            as 1. An example of a comma-delimited list of levels is 1,2,5,9.
+        :type levels: str or None
+        :return: Returns dictionary of items with datetime as the key
+        """
         queue = collections.defaultdict(list)
 
         mapping = {
