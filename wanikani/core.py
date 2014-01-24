@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = ['WaniKani', 'Radical', 'Kanji', 'Vocabulary']
 
-WANIKANI_BASE = 'http://www.wanikani.com/api/v1.2/user/{0}/{1}'
+WANIKANI_BASE = 'https://www.wanikani.com/api/v1.2/user/{0}/{1}'
 
 
 class BaseObject(object):
