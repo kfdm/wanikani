@@ -1,5 +1,6 @@
 import argparse
 import datetime
+
 import logging
 import os
 
@@ -17,6 +18,12 @@ from wanikani.core import WaniKani, Radical, Kanji, Vocabulary
 CONFIG_PATH = os.path.join(os.path.expanduser('~'), '.wanikani')
 
 logger = logging.getLogger(__name__)
+
+# Setup tomorrow for use in filtering
+tomorrow = datetime.datetime.today().replace(
+    hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)
+if LOCAL_TIMEZONE:
+    tomorrow.replace(tzinfo=LOCAL_TIMEZONE)
 
 
 def config():
@@ -83,6 +90,7 @@ class Upcoming(Subcommand):
         self.parser.add_argument('-s', '--show', action='store_true')
         self.parser.add_argument('-l', '--limit', type=int)
         self.parser.add_argument('-b', '--blocker', action='store_true')
+        self.parser.add_argument('-t', '--today', action='store_true')
 
     def execute(self, client, args):
         level = None
@@ -133,6 +141,10 @@ class Upcoming(Subcommand):
             'total': 0,
         }
         for ts in sorted(queue):
+            if args.today:
+                if ts >= tomorrow:
+                    logger.debug('Skipping future dates %s', ts)
+                    continue
             if args.limit and counter == args.limit:
                 break
             if len(queue[ts]):
