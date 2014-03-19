@@ -204,6 +204,47 @@ class SetAPIKey(Subcommand):
         print 'Wrote {0} to {1}'.format(args.api_key, CONFIG_PATH)
 
 
+class Gourse(Subcommand):
+    name = 'gource'
+    help = 'Generate log for rendering with gource'
+
+    def add_parsers(self):
+        self.parser.add_argument(
+            '-l', '--levels',
+            help="Show level in path",
+        )
+
+    colors = {
+        'Vocabulary': '882D9E',
+        'Radical': '0093DD',
+        'Kanji': 'DD0093',
+    }
+
+    burned = '434343'
+
+    def execute(self, client, args):
+        log = []
+        profile = client.profile()
+        queue = client.upcoming(args.levels)
+        for ts in queue:
+            for item in queue[ts]:
+                try:
+                    string = '{0}|{1}|{2}|{3}/{4}|{5}'.format(
+                        item.unlocked,
+                        profile['username'],
+                        'A',
+                        item.__class__.__name__,
+                        item,
+                        self.colors[item.__class__.__name__],
+                    )
+                    log.append(string)
+                except UnicodeDecodeError:
+                    pass
+
+        for item in sorted(log):
+            print item
+
+
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -223,6 +264,7 @@ def main():
     RecentUnlocks(subparsers)
     Upcoming(subparsers)
     SetAPIKey(subparsers)
+    Gourse(subparsers)
 
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)

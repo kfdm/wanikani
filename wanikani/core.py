@@ -25,6 +25,16 @@ class BaseObject(object):
         )
 
     @property
+    def unlocked(self):
+        return self.raw['user_specific']['unlocked_date']
+
+    @property
+    def burned(self):
+        if self.raw['user_specific']['burned']:
+            return self.raw['user_specific']['burned_date']
+        return None
+
+    @property
     def srs(self):
         return self.raw['user_specific']['srs']
 
