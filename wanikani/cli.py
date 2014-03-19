@@ -213,6 +213,11 @@ class Gourse(Subcommand):
             '-l', '--levels',
             help="Show level in path",
         )
+        self.parser.add_argument(
+            '-g', '--group',
+            help="Group by level",
+            action='store_true',
+        )
 
     colors = {
         'Vocabulary': '882D9E',
@@ -225,20 +230,39 @@ class Gourse(Subcommand):
     def execute(self, client, args):
         log = []
         profile = client.profile()
-        queue = client.upcoming(args.levels)
-        for ts in queue:
-            for item in queue[ts]:
+
+        mapping = {
+            Radical: client.radicals,
+            Kanji: client.kanji,
+            Vocabulary: client.vocabulary
+        }
+
+        for klass in mapping:
+            for item in mapping[klass](args.levels):
                 try:
                     string = '{0}|{1}|{2}|{3}/{4}|{5}'.format(
                         item.unlocked,
                         profile['username'],
                         'A',
-                        item.__class__.__name__,
+                        item['level'] if args.group else item.__class__.__name__,
                         item,
                         self.colors[item.__class__.__name__],
                     )
                     log.append(string)
+
+                    if item.srs == u'burned':
+                        string = '{0}|{1}|{2}|{3}/{4}|{5}'.format(
+                            item.burned,
+                            profile['username'],
+                            'M',
+                            item['level'] if args.group else item.__class__.__name__,
+                            item,
+                            self.burned,
+                        )
+                        log.append(string)
                 except UnicodeDecodeError:
+                    pass
+                except TypeError:
                     pass
 
         for item in sorted(log):
