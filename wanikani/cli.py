@@ -157,15 +157,8 @@ class Upcoming(Subcommand):
 
                 for obj in queue[ts]:
                     totals['total'] += 1
-                    if isinstance(obj, Radical):
-                        counts[Radical] += 1
-                        totals[Radical] += 1
-                    if isinstance(obj, Kanji):
-                        counts[Kanji] += 1
-                        totals[Kanji] += 1
-                    if isinstance(obj, Vocabulary):
-                        counts[Vocabulary] += 1
-                        totals[Vocabulary] += 1
+                    counts[obj.__class__] += 1
+                    totals[obj.__class__] += 1
 
                 if LOCAL_TIMEZONE:
                     ts.replace(tzinfo=LOCAL_TIMEZONE)
@@ -269,6 +262,63 @@ class Gourse(Subcommand):
             print item
 
 
+class Burning(Subcommand):
+    name = 'burning'
+    help = 'Items that are about to be burned'
+    formatter = '{0:<20} {1:>10} {2:>10} {3:>10} {4:>10}'
+
+    def add_parsers(self):
+        self.parser.add_argument('-l', '--limit', type=int)
+
+    def execute(self, client, args):
+        queue = client.burning()
+        counter = 0
+        print self.formatter.format('Timestamp', 'Radicals', 'Kanji', 'Vocab', 'Total')
+        totals = {
+            Radical: 0,
+            Kanji: 0,
+            Vocabulary: 0,
+            'total': 0,
+        }
+        for ts in sorted(queue):
+            if args.limit and counter == args.limit:
+                break
+            if not len(queue[ts]):
+                continue
+
+            counter += 1
+            counts = {
+                Radical: 0,
+                Kanji: 0,
+                Vocabulary: 0,
+            }
+
+            for obj in queue[ts]:
+                totals['total'] += 1
+                counts[obj.__class__] += 1
+                totals[obj.__class__] += 1
+
+            if LOCAL_TIMEZONE:
+                ts.replace(tzinfo=LOCAL_TIMEZONE)
+            # Note the trailing commas,
+            # We only want a newline for the last one
+            print self.formatter.format(
+                str(ts),
+                counts[Radical],
+                counts[Kanji],
+                counts[Vocabulary],
+                len(queue[ts]),
+            )
+
+        print self.formatter.format(
+            'Totals',
+            totals[Radical],
+            totals[Kanji],
+            totals[Vocabulary],
+            totals['total']
+        )
+
+
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -289,6 +339,7 @@ def main():
     Upcoming(subparsers)
     SetAPIKey(subparsers)
     Gourse(subparsers)
+    Burning(subparsers)
 
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)

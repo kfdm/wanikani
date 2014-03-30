@@ -80,6 +80,12 @@ class WaniKani(object):
         self.api_key = api_key
         self.session = requests.Session()
 
+        self._mapping = {
+            Radical: self.radicals,
+            Kanji: self.kanji,
+            Vocabulary: self.vocabulary
+        }
+
     def profile(self):
         url = WANIKANI_BASE.format(self.api_key, 'user-information')
         result = self.session.get(url)
@@ -178,14 +184,16 @@ class WaniKani(object):
         """
         queue = collections.defaultdict(list)
 
-        mapping = {
-            Radical: self.radicals,
-            Kanji: self.kanji,
-            Vocabulary: self.vocabulary
-        }
-
-        for klass in mapping:
-            for obj in mapping[klass](levels):
+        for klass in self._mapping:
+            for obj in self._mapping[klass](levels):
                 if obj.next_review and obj.srs != u'burned':
+                    queue[obj.next_review].append(obj)
+        return queue
+
+    def burning(self):
+        queue = collections.defaultdict(list)
+        for klass in self._mapping:
+            for obj in self._mapping[klass]():
+                if obj.next_review and obj.srs == u'enlighten':
                     queue[obj.next_review].append(obj)
         return queue
