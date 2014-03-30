@@ -24,7 +24,7 @@ class WaniKaniView(View):
         client = WaniKani(API_KEY)
 
         level = client.profile()['level']
-        queue = client.upcoming(level)
+        queue = client.query(level, items=[Radical, Kanji])
 
         cal = Calendar()
         cal.add('prodid', '-//My calendar product//mxm.dk//')

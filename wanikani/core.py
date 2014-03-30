@@ -36,7 +36,11 @@ class BaseObject(object):
 
     @property
     def srs(self):
-        return self.raw['user_specific']['srs']
+        try:
+            return self.raw['user_specific']['srs']
+        except TypeError:
+            # Likely an object that has not been learned yet
+            return None
 
     def __getitem__(self, key):
         if key in self.raw:
@@ -79,12 +83,6 @@ class WaniKani(object):
     def __init__(self, api_key):
         self.api_key = api_key
         self.session = requests.Session()
-
-        self._mapping = {
-            Radical: self.radicals,
-            Kanji: self.kanji,
-            Vocabulary: self.vocabulary
-        }
 
     def profile(self):
         url = WANIKANI_BASE.format(self.api_key, 'user-information')
@@ -182,18 +180,25 @@ class WaniKani(object):
         :type levels: str or None
         :return: Returns dictionary of items with datetime as the key
         """
-        queue = collections.defaultdict(list)
-
-        for klass in self._mapping:
-            for obj in self._mapping[klass](levels):
-                if obj.next_review and obj.srs != u'burned':
-                    queue[obj.next_review].append(obj)
-        return queue
+        return self.query(levels, exclude=[u'burned'])
 
     def burning(self):
+        return self.query(include=[u'enlighten'])
+
+    def query(self, levels=None, items=[Radical, Kanji, Vocabulary], exclude=[], include=[]):
+        mapping = {
+            Radical: self.radicals,
+            Kanji: self.kanji,
+            Vocabulary: self.vocabulary
+        }
+
         queue = collections.defaultdict(list)
-        for klass in self._mapping:
-            for obj in self._mapping[klass]():
-                if obj.next_review and obj.srs == u'enlighten':
+        for klass in items:
+            for obj in mapping[klass](levels):
+                if exclude and obj.srs in exclude:
+                    continue
+                if include and obj.srs not in include:
+                    continue
+                if obj.next_review:
                     queue[obj.next_review].append(obj)
         return queue
