@@ -269,6 +269,7 @@ class Burning(Subcommand):
 
     def add_parsers(self):
         self.parser.add_argument('-l', '--limit', type=int)
+        self.parser.add_argument('-t', '--today', action='store_true')
 
     def execute(self, client, args):
         queue = client.burning()
@@ -285,6 +286,10 @@ class Burning(Subcommand):
                 break
             if not len(queue[ts]):
                 continue
+            if args.today:
+                if ts >= tomorrow:
+                    logger.debug('Skipping future dates %s', ts)
+                    continue
 
             counter += 1
             counts = {
