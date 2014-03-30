@@ -24,7 +24,7 @@ class WaniKaniView(View):
         client = WaniKani(API_KEY)
 
         level = client.profile()['level']
-        queue = client.query(level, items=[Radical, Kanji])
+        queue = client.query(level, items=[Radical, Kanji], include=[u'apprentice'])
 
         cal = Calendar()
         cal.add('prodid', '-//My calendar product//mxm.dk//')
@@ -40,15 +40,7 @@ class WaniKaniView(View):
             }
 
             for obj in queue[ts]:
-                if obj.srs != u'apprentice':
-                    continue
-                if isinstance(obj, Radical):
-                    counts[Radical] += 1
-                if isinstance(obj, Kanji):
-                    counts[Kanji] += 1
-
-            if counts[Radical] == 0 and counts[Kanji] == 0:
-                continue
+                counts[obj.__class__] += 1
 
             event = Event()
             event.add('summary', 'R: {0} K: {1}'.format(

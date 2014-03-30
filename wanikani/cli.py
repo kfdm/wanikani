@@ -132,6 +132,9 @@ class Upcoming(Subcommand):
                 queue[now] = rollup
                 print 'Rolled up reviews'
 
+        self.format(queue, args)
+
+    def format(self, queue, args):
         counter = 0
         print self.formatter.format('Timestamp', 'Radicals', 'Kanji', 'Vocab', 'Total')
         totals = {
@@ -262,66 +265,37 @@ class Gourse(Subcommand):
             print item
 
 
-class Burning(Subcommand):
+class Burning(Upcoming):
     name = 'burning'
     help = 'Items that are about to be burned'
-    formatter = '{0:<20} {1:>10} {2:>10} {3:>10} {4:>10}'
 
     def add_parsers(self):
         self.parser.add_argument('-l', '--limit', type=int)
         self.parser.add_argument('-t', '--today', action='store_true')
+        self.parser.add_argument('-s', '--show', action='store_true')
 
     def execute(self, client, args):
         queue = client.burning()
-        counter = 0
-        print self.formatter.format('Timestamp', 'Radicals', 'Kanji', 'Vocab', 'Total')
-        totals = {
-            Radical: 0,
-            Kanji: 0,
-            Vocabulary: 0,
-            'total': 0,
-        }
-        for ts in sorted(queue):
-            if args.limit and counter == args.limit:
-                break
-            if not len(queue[ts]):
-                continue
-            if args.today:
-                if ts >= tomorrow:
-                    logger.debug('Skipping future dates %s', ts)
-                    continue
+        self.format(queue, args)
 
-            counter += 1
-            counts = {
-                Radical: 0,
-                Kanji: 0,
-                Vocabulary: 0,
-            }
 
-            for obj in queue[ts]:
-                totals['total'] += 1
-                counts[obj.__class__] += 1
-                totals[obj.__class__] += 1
+class Blocker(Upcoming):
+    name = 'blocker'
+    help = 'Items required to level up'
 
-            if LOCAL_TIMEZONE:
-                ts.replace(tzinfo=LOCAL_TIMEZONE)
-            # Note the trailing commas,
-            # We only want a newline for the last one
-            print self.formatter.format(
-                str(ts),
-                counts[Radical],
-                counts[Kanji],
-                counts[Vocabulary],
-                len(queue[ts]),
-            )
+    def add_parsers(self):
+        self.parser.add_argument('-s', '--show', action='store_true')
+        # Today and Limit are used by other commands but not this one
+        self.parser.set_defaults(today=False, limit=False)
 
-        print self.formatter.format(
-            'Totals',
-            totals[Radical],
-            totals[Kanji],
-            totals[Vocabulary],
-            totals['total']
+    def execute(self, client, args):
+        profile = client.profile()
+        queue = client.query(
+            levels=profile['level'],
+            items=[Radical, Kanji],
+            include=[u'apprentice']
         )
+        self.format(queue, args)
 
 
 def main():
@@ -345,6 +319,7 @@ def main():
     SetAPIKey(subparsers)
     Gourse(subparsers)
     Burning(subparsers)
+    Blocker(subparsers)
 
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)
