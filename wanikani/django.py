@@ -1,7 +1,5 @@
-from __future__ import absolute_import
 
-import os
-import logging
+from __future__ import absolute_import
 
 from django.http import HttpResponse
 from django.views.generic.base import View
@@ -11,23 +9,16 @@ from icalendar import Calendar, Event
 
 from wanikani.core import WaniKani, Radical, Kanji
 
-CONFIG_PATH = os.path.join(os.path.expanduser('~'), '.wanikani')
-
-with open(CONFIG_PATH) as fp:
-    API_KEY = fp.read()
-
-logger = logging.getLogger(__name__)
-
 
 class WaniKaniView(View):
-    def get(self, request, *args, **kwargs):
-        client = WaniKani(API_KEY)
+    def get(self, request, **kwargs):
+        client = WaniKani(kwargs['api_key'])
 
         level = client.profile()['level']
         queue = client.query(level, items=[Radical, Kanji], include=[u'apprentice'])
 
         cal = Calendar()
-        cal.add('prodid', '-//My calendar product//mxm.dk//')
+        cal.add('prodid', '-//Wanikani Blockers//github.com/kfdm/wanikani//')
         cal.add('version', '2.0')
 
         for ts in sorted(queue):
