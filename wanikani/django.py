@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
 
@@ -34,9 +35,18 @@ class WaniKaniView(View):
                 counts[obj.__class__] += 1
 
             event = Event()
-            event.add('summary', 'R: {0} K: {1}'.format(
-                counts[Radical], counts[Kanji]
-            ))
+            if counts[Radical] and counts[Kanji]:
+                event.add('summary', u'部首: {0} 漢字: {1}'.format(
+                    counts[Radical], counts[Kanji]
+                ))
+            elif counts[Radical]:
+                event.add('summary', u'部首: {0}'.format(
+                    counts[Radical]
+                ))
+            else:
+                event.add('summary', u'漢字: {0}'.format(
+                    counts[Kanji]
+                ))
             event.add('dtstart', ts)
             event.add('dtend', ts)
             event['uid'] = str(ts)
