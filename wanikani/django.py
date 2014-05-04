@@ -2,9 +2,9 @@
 
 from __future__ import absolute_import
 
+from django.conf.urls import patterns, url
 from django.http import HttpResponse
 from django.views.generic.base import View
-
 
 from icalendar import Calendar, Event
 
@@ -57,3 +57,8 @@ class WaniKaniView(View):
             content=cal.to_ical(),
             content_type='text/plain; charset=utf-8'
         )
+
+urlpatterns = patterns(
+    '',
+    url(r'^(?P<api_key>\w+)', WaniKaniView.as_view()),
+)
