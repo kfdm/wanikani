@@ -87,12 +87,14 @@ class WaniKani(object):
     def profile(self):
         url = WANIKANI_BASE.format(self.api_key, 'user-information')
         result = self.session.get(url)
+        result.raise_for_status()
         data = json.loads(result.text)
         return data['user_information']
 
     def level_progress(self):
         url = WANIKANI_BASE.format(self.api_key, 'level-progression')
         result = self.session.get(url)
+        result.raise_for_status()
         data = json.loads(result.text)
         merged = data['requested_information']
         merged['user_information'] = data['user_information']
@@ -101,6 +103,7 @@ class WaniKani(object):
     def recent_unlocks(self, limit=10):
         url = WANIKANI_BASE.format(self.api_key, 'recent-unlocks')
         result = self.session.get(url)
+        result.raise_for_status()
         data = json.loads(result.text)
 
         mapping = {
@@ -125,6 +128,7 @@ class WaniKani(object):
         if levels:
             url += '/{0}'.format(levels)
         result = self.session.get(url)
+        result.raise_for_status()
         data = json.loads(result.text)
 
         for item in data['requested_information']:
@@ -143,6 +147,7 @@ class WaniKani(object):
         if levels:
             url += '/{0}'.format(levels)
         result = self.session.get(url)
+        result.raise_for_status()
         data = json.loads(result.text)
 
         for item in data['requested_information']:
@@ -161,6 +166,7 @@ class WaniKani(object):
         if levels:
             url += '/{0}'.format(levels)
         result = self.session.get(url)
+        result.raise_for_status()
         data = json.loads(result.text)
 
         if 'general' in data['requested_information']:
