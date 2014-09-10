@@ -116,6 +116,24 @@ class WaniKani(object):
             klass = mapping[item['type']]
             yield klass(item)
 
+    def critical_items(self, percentage=75):
+        url = WANIKANI_BASE.format(self.api_key, 'critical-items')
+        if percentage:
+            url += '/{0}'.format(percentage)
+        result = self.session.get(url)
+        result.raise_for_status()
+        data = json.loads(result.text)
+
+        mapping = {
+            'vocabulary': Vocabulary,
+            'kanji': Kanji,
+            'radical': Radical,
+        }
+
+        for item in data['requested_information']:
+            klass = mapping[item['type']]
+            yield klass(item)
+
     def radicals(self, levels=None):
         """
         :param levels string: An optional argument of declaring a single or
