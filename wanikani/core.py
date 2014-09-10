@@ -118,6 +118,8 @@ class WaniKani(object):
 
     def critical_items(self, percentage=75):
         url = WANIKANI_BASE.format(self.api_key, 'critical-items')
+        if percentage:
+            url += '/{0}'.format(percentage)
         result = self.session.get(url)
         result.raise_for_status()
         data = json.loads(result.text)
