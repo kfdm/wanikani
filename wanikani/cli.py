@@ -298,6 +298,22 @@ class Blocker(Upcoming):
         self.format(queue, args)
 
 
+class Critical(Subcommand):
+    name = 'critical'
+    help = 'Critical items'
+    format_text = '{item[percentage]:>5}% {item[type]:<10} {item!s} {item[meaning]}'
+
+    def add_parsers(self):
+        self.parser.add_argument(
+            '-p', '--percentage', type=int,
+            help='Critical item percentage'
+        )
+
+    def execute(self, client, args):
+        for item in client.critical_items(percentage=args.percentage):
+            print self.format_text.format(item=item)
+
+
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -320,6 +336,7 @@ def main():
     Gourse(subparsers)
     Burning(subparsers)
     Blocker(subparsers)
+    Critical(subparsers)
 
     args = parser.parse_args()
     logging.basicConfig(level=args.debug)
