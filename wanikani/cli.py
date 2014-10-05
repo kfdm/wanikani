@@ -91,6 +91,7 @@ class Upcoming(Subcommand):
         self.parser.add_argument('-l', '--limit', type=int)
         self.parser.add_argument('-b', '--blocker', action='store_true')
         self.parser.add_argument('-t', '--today', action='store_true')
+        self.parser.add_argument('-d', '--day', action='store_true')
 
     def execute(self, client, args):
         level = None
@@ -120,6 +121,13 @@ class Upcoming(Subcommand):
                     keep.append(item)
 
                 queue[ts] = keep
+
+        if args.day:
+            newqueue = {}
+            for ts in queue.keys():
+                newts = ts.replace(hour=0, minute=0, second=0, microsecond=0)
+                newqueue[newts] = queue.pop(ts)
+            queue = newqueue
 
         if args.rollup:
             now = datetime.datetime.now().replace(microsecond=0)
