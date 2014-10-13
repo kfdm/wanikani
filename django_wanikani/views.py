@@ -76,7 +76,7 @@ class ReviewsCalendar(View):
 
         newqueue = collections.defaultdict(list)
         for ts in queue.keys():
-            newts = ts.replace(hour=0, minute=0, second=0, microsecond=0)
+            newts = ts.date()
             newqueue[newts] += queue.pop(ts)
         queue = newqueue
 
@@ -86,7 +86,7 @@ class ReviewsCalendar(View):
 
             event = Event()
             event.add('summary', '{0} items'.format(len(queue[ts])))
-            event.add('dtstart', ts.date())
+            event.add('dtstart', ts)
             cal.add_component(event)
 
         return HttpResponse(
