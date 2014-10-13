@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
+import collections
 
 from django.http import HttpResponse
 from django.views.generic.base import View
@@ -53,6 +54,39 @@ class BlockersCalendar(View):
             event.add('dtend', ts)
             event['uid'] = str(ts)
 
+            cal.add_component(event)
+
+        return HttpResponse(
+            content=cal.to_ical(),
+            content_type='text/plain; charset=utf-8'
+        )
+
+
+class ReviewsCalendar(View):
+    '''
+    Show the number of reviews for that day
+    '''
+    def get(self, request, **kwargs):
+        client = WaniKani(kwargs['api_key'])
+        queue = client.upcoming()
+
+        cal = Calendar()
+        cal.add('prodid', '-//Wanikani Reviews//github.com/kfdm/django-wanikani//')
+        cal.add('version', '2.0')
+
+        newqueue = collections.defaultdict(list)
+        for ts in queue.keys():
+            newts = ts.replace(hour=0, minute=0, second=0, microsecond=0)
+            newqueue[newts] += queue.pop(ts)
+        queue = newqueue
+
+        for ts in sorted(queue):
+            if not len(queue[ts]):
+                continue
+
+            event = Event()
+            event.add('summary', '{0} items'.format(len(queue[ts])))
+            event.add('dtstart', ts.date())
             cal.add_component(event)
 
         return HttpResponse(
