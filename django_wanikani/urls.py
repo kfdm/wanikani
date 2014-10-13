@@ -9,7 +9,7 @@ urlpatterns = patterns(
     # url(r'^$', 'django_wanikani.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/', include(admin.site.urls)),
     url(r'^calendars/(?P<api_key>\w+)/blocker.ics', BlockersCalendar.as_view(), name='blockers'),
     url(r'^calendars/(?P<api_key>\w+)/reviews.ics', ReviewsCalendar.as_view(), name='reviews'),
 )
