@@ -10,7 +10,10 @@ from icalendar import Calendar, Event
 from wanikani.core import WaniKani, Radical, Kanji
 
 
-class WaniKaniView(View):
+class BlockersCalendar(View):
+    '''
+    Calendar to graph all the blockers for the next level
+    '''
     def get(self, request, **kwargs):
         client = WaniKani(kwargs['api_key'])
 
