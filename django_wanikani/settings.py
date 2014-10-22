@@ -81,3 +81,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Enable Sentry
+if 'SENTRY_DSN' in os.environ:
+    # Set your DSN value
+    RAVEN_CONFIG = {'dsn': os.environ.get('SENTRY_DSN')}
+    INSTALLED_APPS += ('raven.contrib.django.raven_compat',)

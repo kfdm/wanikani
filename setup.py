@@ -9,6 +9,7 @@ setup(
     install_requires=[
         'Django>=1.7',
         'icalendar',
+        'raven',
         'wanikani',
     ],
     entry_points={
