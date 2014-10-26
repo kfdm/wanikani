@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(__file__)
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,8 +38,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 )
 
+TEMPLATE_DIRS = {
+    os.path.join(BASE_DIR, 'templates')
+}
+
 MIDDLEWARE_CLASSES = (
-    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -48,20 +52,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 ROOT_URLCONF = 'django_wanikani.urls'
 
 WSGI_APPLICATION = 'django_wanikani.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

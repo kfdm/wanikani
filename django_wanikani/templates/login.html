@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Input your WaniKani api key</h2>
+You can find your api key on <a href="https://www.wanikani.com/api">this</a> page.
+<form action="/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}

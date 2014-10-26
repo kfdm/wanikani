@@ -3,12 +3,37 @@
 from __future__ import absolute_import
 import collections
 
+from django import forms
 from django.http import HttpResponse
 from django.views.generic.base import View
+from django.shortcuts import render
 
 from icalendar import Calendar, Event
 
 from wanikani.core import WaniKani, Radical, Kanji
+
+
+class ApiForm(forms.Form):
+    api_key = forms.CharField(max_length=100)
+
+
+class MainMenu(View):
+    def post(self, request):
+        form = ApiForm(request.POST)
+        if form.is_valid():
+            request.session['api_key'] = form.cleaned_data['api_key']
+
+        return self.get(request)
+
+    def get(self, request):
+        form = ApiForm()
+        if request.session.get('api_key'):
+            return render(request, 'main.html', {
+                'api_key': request.session.get('api_key'),
+                'form': form,
+            })
+        else:
+            return render(request, 'login.html', {'form': form})
 
 
 class BlockersCalendar(View):

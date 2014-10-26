@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Tools</h2>
+
+<ul>
+    <li><a href="{% url 'blockers' api_key %}">Blockers Calendar</a></li>
+    <li><a href="{% url 'reviews' api_key %}">Reviews Calendar</a></li>
+    <li><a href="">Anki Deck</a></li>
+</ul>
+
+<h3>Switch to a different API key</h3>
+You can find your api key on <a href="https://www.wanikani.com/api">this</a> page.
+<form action="/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
