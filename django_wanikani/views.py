@@ -83,7 +83,7 @@ class BlockersCalendar(View):
 
         return HttpResponse(
             content=cal.to_ical(),
-            content_type='text/plain; charset=utf-8'
+            content_type='text/calendar; charset=utf-8'
         )
 
 
@@ -110,11 +110,11 @@ class ReviewsCalendar(View):
                 continue
 
             event = Event()
-            event.add('summary', '{0} items'.format(len(queue[ts])))
+            event.add('summary', '復習 {0}'.format(len(queue[ts])))
             event.add('dtstart', ts)
             cal.add_component(event)
 
         return HttpResponse(
             content=cal.to_ical(),
-            content_type='text/plain; charset=utf-8'
+            content_type='text/calendar; charset=utf-8'
         )
