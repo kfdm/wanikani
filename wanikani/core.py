@@ -12,6 +12,40 @@ __all__ = ['WaniKani', 'Radical', 'Kanji', 'Vocabulary']
 WANIKANI_BASE = 'https://www.wanikani.com/api/v1.2/user/{0}/{1}'
 
 
+def split(func):
+    # From http://stackoverflow.com/a/21767522/622650
+    def iter_baskets_contiguous(items, maxbaskets=3, item_count=None):
+        '''
+        generates balanced baskets from iterable, contiguous contents
+        provide item_count if providing a iterator that doesn't support len()
+        '''
+        item_count = item_count or len(items)
+        baskets = min(item_count, maxbaskets)
+        items = iter(items)
+        floor = item_count // baskets
+        ceiling = floor + 1
+        stepdown = item_count % baskets
+        for x_i in xrange(baskets):
+            length = ceiling if x_i < stepdown else floor
+            yield [items.next() for _ in xrange(length)]
+
+    def wrapper(self, levels):
+        # If levels is None, then we're getting all levels for the user
+        # and may need to split it up into multiple queries to avoid timeouts
+        if levels is None:
+            logger.debug('Splitting levels %s', levels)
+            level = self.profile()['level']
+            step = level / 10
+            for basket in iter_baskets_contiguous(range(1, level + 1), step):
+                logger.debug('Loading chunk %s', basket)
+                for item in func(self, ','.join([str(i) for i in basket])):
+                    yield item
+        else:
+            for item in func(self, levels):
+                yield item
+    return wrapper
+
+
 class BaseObject(object):
     def __init__(self, raw):
         self.raw = raw
@@ -171,6 +205,7 @@ class WaniKani(object):
         for item in data['requested_information']:
             yield Kanji(item)
 
+    @split
     def vocabulary(self, levels=None):
         """
         :param levels: An optional argument of declaring a single or
@@ -180,6 +215,7 @@ class WaniKani(object):
 
         http://www.wanikani.com/api/v1.2#vocabulary-list
         """
+
         url = WANIKANI_BASE.format(self.api_key, 'vocabulary')
         if levels:
             url += '/{0}'.format(levels)
