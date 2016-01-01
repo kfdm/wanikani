@@ -1,3 +1,5 @@
+from wanikani.django.wk.models import ApiKey
+
 from django.contrib import admin
 
-# Register your models here.
+admin.site.register(ApiKey)

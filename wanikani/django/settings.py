@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social.apps.django_app.default',
+    'wanikani.django.wk.apps.WkConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
