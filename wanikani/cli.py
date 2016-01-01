@@ -53,8 +53,8 @@ class Profile(Subcommand):
 
     def execute(self, client, args):
         p = client.profile()
-        print 'Username:', p['username']
-        print 'Level:', p['level']
+        print('Username:', p['username'])
+        print('Level:', p['level'])
 
 
 class LevelProgress(Subcommand):
@@ -63,9 +63,9 @@ class LevelProgress(Subcommand):
 
     def execute(self, client, args):
         p = client.level_progress()
-        print p['user_information']['username'], 'level', p['user_information']['level']
-        print 'Radicals: {0}/{1}'.format(p['radicals_progress'], p['radicals_total'])
-        print 'Kanji: {0}/{1}'.format(p['kanji_progress'], p['kanji_total'])
+        print(['user_information']['username'], 'level', p['user_information']['level'])
+        print('Radicals: {0}/{1}'.format(p['radicals_progress'], p['radicals_total']))
+        print('Kanji: {0}/{1}'.format(p['kanji_progress'], p['kanji_total']))
 
 
 class RecentUnlocks(Subcommand):
@@ -74,9 +74,9 @@ class RecentUnlocks(Subcommand):
     formatter = '{0:<10} {1:<5} {2}'
 
     def execute(self, client, args):
-        print self.formatter.format('type', 'level', 'character')
+        print(self.formatter.format('type', 'level', 'character'))
         for item in client.recent_unlocks():
-            print self.formatter.format(item['type'], item['level'], item)
+            print(self.formatter.format(item['type'], item['level'], item))
 
 
 class Upcoming(Subcommand):
@@ -101,7 +101,7 @@ class Upcoming(Subcommand):
         queue = client.upcoming(level)
 
         if args.current or args.blocker:
-            print 'Showing upcoming items for level', level
+            print('Showing upcoming items for level', level)
             logger.info('Filtering out items that are not level %s', level)
             for ts in queue.keys():
                 keep = []
@@ -138,13 +138,13 @@ class Upcoming(Subcommand):
                     rollup += queue.pop(ts)
             if rollup:
                 queue[now] = rollup
-                print 'Rolled up reviews'
+                print('Rolled up reviews')
 
         self.format(queue, args)
 
     def format(self, queue, args):
         counter = 0
-        print self.formatter.format('Timestamp', 'Radicals', 'Kanji', 'Vocab', 'Total')
+        print(self.formatter.format('Timestamp', 'Radicals', 'Kanji', 'Vocab', 'Total'))
         totals = {
             Radical: 0,
             Kanji: 0,
@@ -175,24 +175,24 @@ class Upcoming(Subcommand):
                     ts.replace(tzinfo=LOCAL_TIMEZONE)
                 # Note the trailing commas,
                 # We only want a newline for the last one
-                print self.formatter.format(
+                print(self.formatter.format(
                     str(ts),
                     counts[Radical],
                     counts[Kanji],
                     counts[Vocabulary],
                     len(queue[ts]),
-                )
+                ))
 
                 if args.show:
-                    print '\t',
-                    print ', '.join([str(x) for x in queue[ts]])
-        print self.formatter.format(
+                    print('\t',)
+                    print(', '.join([str(x) for x in queue[ts]]))
+        print(self.formatter.format(
             'Totals',
             totals[Radical],
             totals[Kanji],
             totals[Vocabulary],
             totals['total']
-        )
+        ))
 
 
 class SetAPIKey(Subcommand):
@@ -205,7 +205,7 @@ class SetAPIKey(Subcommand):
     def execute(self, client, args):
         with open(CONFIG_PATH, 'w') as f:
             f.write(args.api_key)
-        print 'Wrote {0} to {1}'.format(args.api_key, CONFIG_PATH)
+        print('Wrote {0} to {1}'.format(args.api_key, CONFIG_PATH))
 
 
 class Gourse(Subcommand):
@@ -270,7 +270,7 @@ class Gourse(Subcommand):
                     pass
 
         for item in sorted(log):
-            print item
+            print(item)
 
 
 class Burning(Upcoming):
@@ -319,7 +319,7 @@ class Critical(Subcommand):
 
     def execute(self, client, args):
         for item in client.critical_items(percentage=args.percentage):
-            print self.format_text.format(item=item)
+            print(self.format_text.format(item=item))
 
 
 def main():
