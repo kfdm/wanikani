@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'wanikani.django.urls.navigation',
             ],
         },
     },
@@ -144,6 +145,8 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_GOOGLE_PLUS_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_KEY')
 SOCIAL_AUTH_GOOGLE_PLUS_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_PLUS_SECRET')
 LOGIN_URL = '/login'
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 # Enable Sentry
 if 'SENTRY_DSN' in os.environ:

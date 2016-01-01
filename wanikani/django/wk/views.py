@@ -13,7 +13,7 @@ from wanikani.core import Kanji, Radical, WaniKani
 
 
 class ApiForm(forms.Form):
-    api_key = forms.CharField(max_length=100)
+    api_key = forms.CharField(max_length=32)
 
 
 class MainMenu(View):

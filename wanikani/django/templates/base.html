@@ -4,41 +4,60 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>WaniKani Tools</title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
-        <style>
-body {
-  padding-top: 50px;
-}
-.starter-template {
-  padding: 40px 15px;
-  text-align: center;
-}
-        </style>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+            integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+            integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
     </head>
     <body>
-        <header class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="container">
+        <header class="navbar navbar-inverse navbar-static-top" role="navigation">
+            <nav class="container-fluid">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">WaniKani Tools</a>
+                    <a class="navbar-brand" href="/">WaniKani Tools</a>
                 </div>
-            </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+
+{% for label, link in navigation %}
+                        <li><a href="{{ link }}">{{ label }}</a></li>
+{% endfor %}
+                    </ul>
+                    <form class="navbar-form navbar-left" role="search" action="{% url 'index' %}" method="post">
+                        <div class="form-group">
+                            {% csrf_token %}
+                            <input type="text" name="api_key" class="form-control" placeholder="Set API Key">
+                        </div>
+                        <button type="submit" class="btn btn-default">Set API Key</button>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            {% block github %}
+                            <a href="https://github.com/kfdm/wanikani/issues">
+                                <img src="https://img.shields.io/github/issues/kfdm/wanikani.svg" />
+                            </a>
+                            {% endblock %}
+                        </li>
+                    </ul>
+                </div>
+                </div>
+                <!-- /.navbar-collapse -->
         </header>
         <div class="container">
             <div>
-{% block content %}{% endblock %}
+                {% block content %}{% endblock %}
             </div>
         </div>
         <footer class="container" id="footer">
-            Copyright &copy; Paul Traylor 2004-2014
+            Copyright &copy; Paul Traylor 2014-2016
         </footer>
-        <script src="https://code.jquery.com/jquery.js"></script>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     </body>
 </html>

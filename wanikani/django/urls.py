@@ -19,10 +19,23 @@ from wanikani.django.wk.views import (BlockersCalendar, MainMenu,
 
 from django.conf.urls import url
 from django.contrib import admin
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = [
-    url(r'^$', MainMenu.as_view()),
+    url(r'^$', MainMenu.as_view(), name='index'),
     url(r'^calendars/(?P<api_key>\w+)/blocker.ics', BlockersCalendar.as_view(), name='blockers'),
     url(r'^calendars/(?P<api_key>\w+)/reviews.ics', ReviewsCalendar.as_view(), name='reviews'),
     url(r'^admin/', admin.site.urls),
 ]
+
+
+def navigation(request):
+    if request.session.get('api_key'):
+        return {
+            'navigation': [
+                (_('blockers calendar'), reverse('blockers', kwargs={'api_key': request.session.get('api_key')})),
+                (_('reviews calendar'), reverse('reviews', kwargs={'api_key': request.session.get('api_key')})),
+            ]
+        }
+    return {}
