@@ -25,9 +25,9 @@ def split(func):
         floor = item_count // baskets
         ceiling = floor + 1
         stepdown = item_count % baskets
-        for x_i in xrange(baskets):
+        for x_i in range(baskets):
             length = ceiling if x_i < stepdown else floor
-            yield [items.next() for _ in xrange(length)]
+            yield [items.next() for _ in range(length)]
 
     def wrapper(self, levels):
         # If levels is None, then we're getting all levels for the user
