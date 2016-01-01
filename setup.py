@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 __version__ = '0.1'
 
@@ -9,7 +9,7 @@ setup(
     author='Paul Traylor',
     url='http://github.com/kfdm/wanikani/',
     version=__version__,
-    packages=['wanikani'],
+    packages=find_packages(),
     install_requires=['requests'],
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
