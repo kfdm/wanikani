@@ -32,6 +32,7 @@ setup(
             'Django >= 1.9, < 1.10',
             'django-cache-url',
             'envdir',
+            'icalendar',
             'python-social-auth',
             'raven',
         ],
