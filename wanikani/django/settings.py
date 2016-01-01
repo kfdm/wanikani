@@ -12,20 +12,29 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+import dj_database_url
+import django_cache_url
+import envdir
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+CONFIG_DIR = os.path.expanduser('~/.config/wanikani')
+
+if os.path.exists(CONFIG_DIR):
+    envdir.open(CONFIG_DIR)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'w+)+%^yl_x&zwg@=y0p4omn*rr+8j6t97urc!%r8dx*zcsqn1$'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.path.exists(os.path.join(CONFIG_DIR, 'DEBUG'))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -50,12 +59,12 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'wkdjango.urls'
+ROOT_URLCONF = 'wanikani.django.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'django', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,18 +77,20 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'wkdjango.wsgi.application'
+WSGI_APPLICATION = 'wanikani.django.wsgi.application'
 
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+DATABASES = {'default': dj_database_url.config(
+    env='DJANGO_DATABASE_URL',
+    default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+)}
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+CACHES = {'default': django_cache_url.config(
+    env='DJANGO_CACHE_URL',
+    default='dummy://',
+)}
 
 
 # Password validation
@@ -119,3 +130,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Enable Sentry
+if 'SENTRY_DSN' in os.environ:
+    # Set your DSN value
+    RAVEN_CONFIG = {'dsn': os.environ.get('SENTRY_DSN')}
+    INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
