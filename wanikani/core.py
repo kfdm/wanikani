@@ -19,15 +19,15 @@ def split(func):
         generates balanced baskets from iterable, contiguous contents
         provide item_count if providing a iterator that doesn't support len()
         '''
-        item_count = item_count or len(items)
+        item_count = int(item_count or len(items))
         baskets = min(item_count, maxbaskets)
         items = iter(items)
-        floor = item_count // baskets
+        floor = int(item_count // baskets)
         ceiling = floor + 1
         stepdown = item_count % baskets
-        for x_i in range(baskets):
+        for x_i in range(int(baskets)):
             length = ceiling if x_i < stepdown else floor
-            yield [items.next() for _ in range(length)]
+            yield [next(items) for _ in range(length)]
 
     def wrapper(self, levels):
         # If levels is None, then we're getting all levels for the user
@@ -118,27 +118,26 @@ class WaniKani(object):
         self.api_key = api_key
         self.session = requests.Session()
 
+    def get(self, *args, **kwargs):
+        result = self.session.get(*args, **kwargs)
+        result.raise_for_status()
+        return result.json
+
     def profile(self):
         url = WANIKANI_BASE.format(self.api_key, 'user-information')
-        result = self.session.get(url)
-        result.raise_for_status()
-        data = json.loads(result.text)
+        data = self.get(url)
         return data['user_information']
 
     def level_progress(self):
         url = WANIKANI_BASE.format(self.api_key, 'level-progression')
-        result = self.session.get(url)
-        result.raise_for_status()
-        data = json.loads(result.text)
+        data = self.get(url)
         merged = data['requested_information']
         merged['user_information'] = data['user_information']
         return merged
 
     def recent_unlocks(self, limit=10):
         url = WANIKANI_BASE.format(self.api_key, 'recent-unlocks')
-        result = self.session.get(url)
-        result.raise_for_status()
-        data = json.loads(result.text)
+        data = self.get(url)
 
         mapping = {
             'vocabulary': Vocabulary,
@@ -154,9 +153,7 @@ class WaniKani(object):
         url = WANIKANI_BASE.format(self.api_key, 'critical-items')
         if percentage:
             url += '/{0}'.format(percentage)
-        result = self.session.get(url)
-        result.raise_for_status()
-        data = json.loads(result.text)
+        data = self.get(url)
 
         mapping = {
             'vocabulary': Vocabulary,
@@ -179,9 +176,7 @@ class WaniKani(object):
         url = WANIKANI_BASE.format(self.api_key, 'radicals')
         if levels:
             url += '/{0}'.format(levels)
-        result = self.session.get(url)
-        result.raise_for_status()
-        data = json.loads(result.text)
+        data = self.get(url)
 
         for item in data['requested_information']:
             yield Radical(item)
@@ -198,9 +193,7 @@ class WaniKani(object):
         url = WANIKANI_BASE.format(self.api_key, 'kanji')
         if levels:
             url += '/{0}'.format(levels)
-        result = self.session.get(url)
-        result.raise_for_status()
-        data = json.loads(result.text)
+        data = self.get(url)
 
         for item in data['requested_information']:
             yield Kanji(item)
@@ -219,9 +212,7 @@ class WaniKani(object):
         url = WANIKANI_BASE.format(self.api_key, 'vocabulary')
         if levels:
             url += '/{0}'.format(levels)
-        result = self.session.get(url)
-        result.raise_for_status()
-        data = json.loads(result.text)
+        data = self.get(url)
 
         if 'general' in data['requested_information']:
             for item in data['requested_information']['general']:

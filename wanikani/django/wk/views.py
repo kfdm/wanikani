@@ -3,18 +3,35 @@
 from __future__ import absolute_import
 
 import collections
+import logging
 
 from django import forms
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.base import View
 from icalendar import Calendar, Event
+from django.core.cache import cache
 from wanikani.core import Kanji, Radical, WaniKani
 
+
+logger = logging.getLogger(__name__)
 
 class ApiForm(forms.Form):
     api_key = forms.CharField(max_length=32)
 
+
+class CachedWaniKani(WaniKani):
+    def get(self, url, *args, **kwargs):
+        result = cache.get(url)
+        if result is not None:
+            logger.info('Found cache for %s', url)
+            return result
+        result = self.session.get(url, *args, **kwargs)
+        result.raise_for_status()
+        data = result.json()
+        logger.info('Caching for %s', url)
+        cache.set(url, data)
+        return data
 
 class MainMenu(View):
     def post(self, request):
@@ -35,12 +52,17 @@ class MainMenu(View):
             return render(request, 'login.html', {'form': form})
 
 
+class Dashboard(View):
+    def get(self, request):
+        client = CachedWaniKani(request.session.get('api_key'))
+
+
 class BlockersCalendar(View):
     '''
     Calendar to graph all the blockers for the next level
     '''
     def get(self, request, **kwargs):
-        client = WaniKani(kwargs['api_key'])
+        client = CachedWaniKani(kwargs['api_key'])
 
         level = client.profile()['level']
         queue = client.query(level, items=[Radical, Kanji], include=[u'apprentice'])
@@ -91,7 +113,7 @@ class ReviewsCalendar(View):
     Show the number of reviews for that day
     '''
     def get(self, request, **kwargs):
-        client = WaniKani(kwargs['api_key'])
+        client = CachedWaniKani(kwargs['api_key'])
         queue = client.upcoming()
 
         cal = Calendar()
@@ -99,7 +121,7 @@ class ReviewsCalendar(View):
         cal.add('version', '2.0')
 
         newqueue = collections.defaultdict(list)
-        for ts in queue.keys():
+        for ts in list(queue.keys()):
             newts = ts.date()
             newqueue[newts] += queue.pop(ts)
         queue = newqueue
