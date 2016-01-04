@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div>{{ profile|escape }}</div>
+<div>{{ current_level|escape }}</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title radicals">Radicals for level {{ profile.level }}</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+        {% for item in radicals %}
+            <div class="col-md-1 {{ item.srs }}">{{ item }} <span class="badge">{{ item.srs_numeric }}</span></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title kanji">Kanji for level {{ profile.level }}</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+        {% for item in kanji %}
+            <div class="col-md-1 {{ item.srs }}">{{ item }} <span class="badge">{{ item.srs_numeric }}</span></div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+<ul>
+{% for srs_level, items in current_level.items %}
+    <li>{{ srs_level }}</li>
+    <ul>
+{% for item in items %}
+        <li>{{ item }}</li>
+{% endfor %}
+    </ul>
+{% endfor %}
+</ul>
+
+{% endblock %}

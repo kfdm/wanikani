@@ -4,15 +4,17 @@ from __future__ import absolute_import
 
 import collections
 import logging
+import operator
+
+from icalendar import Calendar, Event
+
+from wanikani.core import Kanji, Radical, WaniKani
 
 from django import forms
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.base import View
-from icalendar import Calendar, Event
-from django.core.cache import cache
-from wanikani.core import Kanji, Radical, WaniKani
-
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +54,28 @@ class MainMenu(View):
             return render(request, 'login.html', {'form': form})
 
 
-class Dashboard(View):
+class DashboardView(View):
     def get(self, request):
         client = CachedWaniKani(request.session.get('api_key'))
+        profile = client.profile()
+
+        radicals = sorted(client.radicals(levels=profile['level']), key=operator.attrgetter('srs_numeric'))
+        kanji = sorted(client.kanji(levels=profile['level']), key=operator.attrgetter('srs_numeric'))
+
+        levels = collections.defaultdict(list)
+        for item in radicals:
+            levels[item.srs_numeric].append(item)
+        for item in kanji:
+            levels[item.srs_numeric].append(item)
+
+        #sorted(durations.items(), key=operator.itemgetter(1), reverse=True)
+
+        return render(request, 'dashboard.html', {
+            #'current_level': levels,
+            'kanji': kanji,
+            'profile': profile,
+            'radicals': radicals,
+        })
 
 
 class BlockersCalendar(View):

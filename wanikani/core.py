@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = ['WaniKani', 'Radical', 'Kanji', 'Vocabulary']
 
-WANIKANI_BASE = 'https://www.wanikani.com/api/v1.2/user/{0}/{1}'
+WANIKANI_BASE = 'https://www.wanikani.com/api/v1.4/user/{0}/{1}'
 
 
 def split(func):
@@ -76,21 +76,21 @@ class BaseObject(object):
             # Likely an object that has not been learned yet
             return None
 
+    @property
+    def srs_numeric(self):
+        try:
+            return self.raw['user_specific']['srs_numeric']
+        except (AttributeError, TypeError):
+            return 0
+
     def __getitem__(self, key):
         if key in self.raw:
             return self.raw[key]
-        return self.raw['user_specific'][key]
-
-    def __unicode__(self):
-        return self.raw['character']
+        if self.raw['user_specific'] is not None:
+            return self.raw['user_specific'][key]
 
     def __str__(self):
-        try:
-            return self.raw['character'].encode('utf8')
-        except AttributeError:
-            # Certain Radicals do not have a utf8 representation
-            return '?'.encode('utf8')
-
+        return self.raw['character']
 
 class Radical(BaseObject):
     def __repr__(self):
@@ -106,7 +106,7 @@ class Kanji(BaseObject):
 
 
 class Vocabulary(BaseObject):
-    def __unicode__(self):
+    def __str__(self):
         return '{0} [{1}]'.format(self.raw['character'], self.raw['kana'])
 
     def __repr__(self):

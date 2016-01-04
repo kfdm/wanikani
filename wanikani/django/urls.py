@@ -14,8 +14,8 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from wanikani.django.wk.views import (BlockersCalendar, MainMenu,
-                                      ReviewsCalendar)
+from wanikani.django.wk.views import (BlockersCalendar, DashboardView,
+                                      MainMenu, ReviewsCalendar)
 
 from django.conf.urls import url
 from django.contrib import admin
@@ -24,6 +24,7 @@ from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = [
     url(r'^$', MainMenu.as_view(), name='index'),
+    url(r'^dashboard/', DashboardView.as_view(), name='dashboard'),
     url(r'^calendars/(?P<api_key>\w+)/blocker.ics', BlockersCalendar.as_view(), name='blockers'),
     url(r'^calendars/(?P<api_key>\w+)/reviews.ics', ReviewsCalendar.as_view(), name='reviews'),
     url(r'^admin/', admin.site.urls),
