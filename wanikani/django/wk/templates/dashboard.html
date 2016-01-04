@@ -2,10 +2,6 @@
 
 {% block content %}
 
-<div>{{ profile|escape }}</div>
-<div>{{ current_level|escape }}</div>
-
-
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title radicals">Radicals for level {{ profile.level }} <span class="badge">{{ radical_goal }}</span></h3>
@@ -31,16 +27,5 @@
         </div>
     </div>
 </div>
-
-<ul>
-{% for srs_level, items in current_level.items %}
-    <li>{{ srs_level }}</li>
-    <ul>
-{% for item in items %}
-        <li>{{ item }}</li>
-{% endfor %}
-    </ul>
-{% endfor %}
-</ul>
 
 {% endblock %}

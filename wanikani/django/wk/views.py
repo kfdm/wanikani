@@ -36,6 +36,14 @@ class CachedWaniKani(WaniKani):
         cache.set(url, data)
         return data
 
+def context_process(request):
+    if request.session.get('api_key'):
+        client = CachedWaniKani(request.session.get('api_key'))
+        return {
+            'wk_client': client,
+            'profile': client.profile(),
+        }
+
 class MainMenu(View):
     def post(self, request):
         form = ApiForm(request.POST)

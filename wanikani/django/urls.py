@@ -35,6 +35,7 @@ def navigation(request):
     if request.session.get('api_key'):
         return {
             'navigation': [
+                (_('dashboard'), reverse('dashboard')),
                 (_('blockers calendar'), reverse('blockers', kwargs={'api_key': request.session.get('api_key')})),
                 (_('reviews calendar'), reverse('reviews', kwargs={'api_key': request.session.get('api_key')})),
             ]

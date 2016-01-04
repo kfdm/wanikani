@@ -25,3 +25,7 @@
 .goal {
     background-color: #EEE
 }
+img.avatar {
+    width: 24px;
+    height: 24px;
+}
