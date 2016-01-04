@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import collections
 import logging
+import math
 import operator
 
 from icalendar import Calendar, Event
@@ -59,8 +60,8 @@ class DashboardView(View):
         client = CachedWaniKani(request.session.get('api_key'))
         profile = client.profile()
 
-        radicals = sorted(client.radicals(levels=profile['level']), key=operator.attrgetter('srs_numeric'))
-        kanji = sorted(client.kanji(levels=profile['level']), key=operator.attrgetter('srs_numeric'))
+        radicals = sorted(client.radicals(levels=profile['level']), key=operator.attrgetter('srs_numeric'), reverse=True)
+        kanji = sorted(client.kanji(levels=profile['level']), key=operator.attrgetter('srs_numeric'), reverse=True)
 
         levels = collections.defaultdict(list)
         for item in radicals:
@@ -75,6 +76,8 @@ class DashboardView(View):
             'kanji': kanji,
             'profile': profile,
             'radicals': radicals,
+            'kanji_goal': math.ceil(len(kanji) * 0.9),
+            'radical_goal': math.ceil(len(radicals) * 0.9),
         })
 
 

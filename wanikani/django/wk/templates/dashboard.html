@@ -8,12 +8,12 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title radicals">Radicals for level {{ profile.level }}</h3>
+        <h3 class="panel-title radicals">Radicals for level {{ profile.level }} <span class="badge">{{ radical_goal }}</span></h3>
     </div>
     <div class="panel-body">
         <div class="row">
         {% for item in radicals %}
-            <div class="col-md-1 {{ item.srs }}">{{ item }} <span class="badge">{{ item.srs_numeric }}</span></div>
+            <div class="col-md-1 {{ item.srs }} {% if forloop.counter < kanji_goal %}thumbnail{% endif %}">{{ item }} <span class="badge">{{ item.srs_numeric }}</span></div>
         {% endfor %}
         </div>
     </div>
@@ -21,12 +21,12 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title kanji">Kanji for level {{ profile.level }}</h3>
+        <h3 class="panel-title kanji">Kanji for level {{ profile.level }} <span class="badge">{{ kanji_goal }}</span></h3>
     </div>
     <div class="panel-body">
         <div class="row">
         {% for item in kanji %}
-            <div class="col-md-1 {{ item.srs }}">{{ item }} <span class="badge">{{ item.srs_numeric }}</span></div>
+            <div class="col-md-1 {{ item.srs }} {% if forloop.counter < kanji_goal %}thumbnail{% endif %}">{{ item }} <span class="badge">{{ item.srs_numeric }}</span></div>
         {% endfor %}
         </div>
     </div>
