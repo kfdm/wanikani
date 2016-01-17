@@ -43,6 +43,7 @@ def context_process(request):
             'wk_client': client,
             'profile': client.profile(),
         }
+    return {}
 
 class MainMenu(View):
     def post(self, request):
